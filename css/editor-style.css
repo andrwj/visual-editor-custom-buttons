@@ -1,0 +1,13 @@
+@charset "UTF-8";
+/* CSS Document */
+/* button11:들여쓰기 표식*/
+.pre-paragraph:before {
+  content: '*';
+	top: 3px;
+	margin-left: -16px;
+	width: 11px;
+	padding: 0;
+	position: relative;
+	display: inline-block;
+}
+
