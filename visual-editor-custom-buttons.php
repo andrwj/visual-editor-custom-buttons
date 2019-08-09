@@ -10,6 +10,9 @@ Text Domain: editor-custom-buttons
 License: GPL
 */
 
+//require_once(__DIR__ . '/vendor/autoload.php');
+//PhpConsole\Helper::register();
+
 add_action('init',           'vecb_editor_buttons');
 add_action("admin_init",     'vecb_admin_init');
 add_action('save_post',      'vecb_save_options');
@@ -381,22 +384,22 @@ function vecb_editor_buttons() {
         add_meta_box("_vecb_script", "Button Specific JavaScript", "vecb_script_options", "vecb_editor_buttons", "normal", "low");
     }
 
-        function vecb_tag_options() {
-            global $post;
-            $custom = get_post_custom($post->ID);
-            $left_tag = $custom["left_tag"][0];
-            $right_tag = $custom["right_tag"][0];
-            $block_content = $custom["block_content"][0];
-            $radio = $custom["content-type"][0];
-            if ($radio == "wrap" || $radio == NULL) {
-                $wrap = "checked";
-                $block = "";
-            } else if ($radio == "block") {
-                $wrap = "";
-                $block = "checked";
-            }
+    function vecb_tag_options() {
+        global $post;
+        $custom = get_post_custom($post->ID);
+        $left_tag = $custom["left_tag"][0];
+        $right_tag = $custom["right_tag"][0];
+        $block_content = $custom["block_content"][0];
+        $radio = $custom["content-type"][0];
+        if ($radio == "wrap" || $radio == NULL) {
+            $wrap = "checked";
+            $block = "";
+        } else if ($radio == "block") {
+            $wrap = "";
+            $block = "checked";
+        }
 
-            $content = ' <div class="recb_inputblock"><input type="radio" name="content-type" class="vecb_radiobtn" id="vecb_wrap" value="wrap" '.$wrap.'>
+        $content = ' <div class="recb_inputblock"><input type="radio" name="content-type" class="vecb_radiobtn" id="vecb_wrap" value="wrap" '.$wrap.'>
   <label for="wrap">&nbsp;Wrap Selection</label>&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="radio" class="vecb_radiobtn" name="content-type" id="block" value="block" '.$block.'>
   <label for="block">&nbsp;Single Block</label></div>';
@@ -414,114 +417,109 @@ function vecb_editor_buttons() {
 
         }
 
-        function vecb_editor_options() {
-            global $post;
-            $custom = get_post_custom($post->ID);
-            $rich_editor = $custom["rich_editor"][0];
-            $html_editor = $custom["html_editor"][0];
-            $icon = $custom["icon"][0];
-            $quicktag = $custom["quicktag"][0];
-            $script = $custom["script_content"][0];
-            $sel1 = "";
-            $sel2 = "";
-            $sel3 = "";
+    function vecb_editor_options() {
+        global $post;
+        $custom = get_post_custom($post->ID);
+        $rich_editor = $custom["rich_editor"][0];
+        $html_editor = $custom["html_editor"][0];
+        $icon = $custom["icon"][0];
+        $quicktag = $custom["quicktag"][0];
+        $script = $custom["script_content"][0];
+        $sel1 = "";
+        $sel2 = "";
+        $sel3 = "";
 
-            //Get files from folder//
-            $dir = WP_PLUGIN_DIR."/visual-editor-custom-buttons/js/icons/";
+        //Get files from folder//
+        $dir = WP_PLUGIN_DIR."/visual-editor-custom-buttons/js/icons/";
 
-            $uploads = wp_upload_dir();
-            $uploaddir = $uploads['basedir']."/vecb/";
-            $uploadurl = $uploads['baseurl']."/vecb/";
+        $uploads = wp_upload_dir();
+        $uploaddir = $uploads['basedir']."/vecb/";
+        $uploadurl = $uploads['baseurl']."/vecb/";
 
-            if(is_dir($uploaddir)){
-                $uploadfiles = scandir($uploaddir);
-            }
+        if(is_dir($uploaddir)){
+            $uploadfiles = scandir($uploaddir);
+        }
 
-            $files = scandir($dir);
-            $btnicons[] = "none.png";
+        $files = scandir($dir);
+        $btnicons[] = "none.png";
 
-            if(is_array($uploadfiles) && count($uploadfiles) >2) {
-                //$customicons[] = "-----------------";
+        if(is_array($uploadfiles) && count($uploadfiles) >2) {
+            //$customicons[] = "-----------------";
 
-                foreach($uploadfiles as $file) {
-                    if($file != "." && $file != "..") {
-                        $customicons[] = $file;
-                    }
-                }
-
-                //$customicons[] = "-----------------";
-            }
-
-            foreach($files as $file) {
-                if($file != "none.png" && $file != "." && $file != "..") {
-                    $btnicons[] = $file;
+            foreach($uploadfiles as $file) {
+                if($file != "." && $file != "..") {
+                    $customicons[] = $file;
                 }
             }
 
-            $sel = array();
-            for ($i=0;$i<count($btnicons);$i++) {
-                if ($icon == $btnicons[$i]) {
-                    $sel[$i] = "selected";
+            //$customicons[] = "-----------------";
+        }
+
+        foreach($files as $file) {
+            if($file != "none.png" && $file != "." && $file != "..") {
+                $btnicons[] = $file;
+            }
+        }
+
+        $sel = array();
+        for ($i=0;$i<count($btnicons);$i++) {
+            if ($icon == $btnicons[$i]) {
+                $sel[$i] = "selected";
+            } else {
+                $sel[$i] = "";
+            }
+        }
+
+        $thisicon = substr($icon, 1);
+
+        if(is_array($customicons)) {
+            for ($i=0;$i<count($customicons);$i++) {
+                if ($thisicon == $customicons[$i]) {
+                    $customsel[$i] = "selected";
                 } else {
-                    $sel[$i] = "";
+                    $customsel[$i] = "";
                 }
             }
 
-            $thisicon = substr($icon, 1);
+        }
 
-            if(is_array($customicons)) {
-                for ($i=0;$i<count($customicons);$i++) {
-                    if ($thisicon == $customicons[$i]) {
-                        $customsel[$i] = "selected";
-                    } else {
-                        $customsel[$i] = "";
-                    }
-                }
+        $re = ($rich_editor != "") ? "checked" : "";
+        $he = ($html_editor != "") ? "checked" : "";
 
-            }
-
-            $re = ($rich_editor != "") ? "checked" : "";
-            $he = ($html_editor != "") ? "checked" : "";
-
-            $content = ' <div class="recb_inputblock"><input type="checkbox" name="rich_editor" id="vecb_rich_editor" value="rich_editor" '.$re.'>
+        $content = ' <div class="recb_inputblock"><input type="checkbox" name="rich_editor" id="vecb_rich_editor" value="rich_editor" '.$re.'>
   <label for="rich_editor">&nbsp;Visual Editor</label>&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="checkbox" name="html_editor" id="vecb_html_editor" value="html_editor" '.$he.'>
   <label for="html_editor">&nbsp;Text Editor</label></div>';
 
+        $content .= '<div id="vecb_btnicon"><div class="vecb_iconselect"><div class="recb_label">Button Icon</div><select name="icon" id="vecb_icon">';
+        $ticon = explode(".", $btnicons[0]);
+        $theicon = str_replace("_"," ",$ticon[0]);
+        $theicon = ucfirst($theicon);
+        $content .= '<option value="'.$btnicons[0].'" '.$sel[0].' >'.$theicon.'</option>';
 
-
-            $content .= '<div id="vecb_btnicon"><div class="vecb_iconselect"><div class="recb_label">Button Icon</div>
-  <select name="icon" id="vecb_icon">';
-
-            $ticon = explode(".", $btnicons[0]);
-            $theicon = str_replace("_"," ",$ticon[0]);
-            $theicon = ucfirst($theicon);
-            $content .= '<option value="'.$btnicons[0].'" '.$sel[0].' >'.$theicon.'</option>';
-
-            if(is_array($customicons)) {
-                for ($i=0;$i<count($customicons);$i++) {
-                    $ticon = explode(".", $customicons[$i]);
-                    $theicon = str_replace("_"," ",$ticon[0]);
-                    $theicon = ucfirst($theicon);
-                    if($customicons[$i] != "-----------------") {
-                        $content .= '<option value="_'.$customicons[$i].'" data-image="'.$uploadurl.$customicons[$i].'" '.$customsel[$i].' >'.$theicon.'</option>';
-                    } else {
-                        $content .= '<option value="none.png" '.$customsel[$i].' >'.$theicon.'</option>';
-                    }
-                }
-
-            }
-
-            $url = plugins_url()."/visual-editor-custom-buttons";
-
-            for ($i=1;$i<count($btnicons);$i++) {
-                $ticon = explode(".", $btnicons[$i]);
+        if(is_array($customicons)) {
+            for ($i=0;$i<count($customicons);$i++) {
+                $ticon = explode(".", $customicons[$i]);
                 $theicon = str_replace("_"," ",$ticon[0]);
                 $theicon = ucfirst($theicon);
-                $content .= '<option value="'.$btnicons[$i].'" data-image="'.$url .'/js/icons/'.$btnicons[$i].'" '.$sel[$i].' >'.$theicon.'</option>';
+                if($customicons[$i] != "-----------------") {
+                    $content .= '<option value="_'.$customicons[$i].'" data-image="'.$uploadurl.$customicons[$i].'" '.$customsel[$i].' >'.$theicon.'</option>';
+                } else {
+                    $content .= '<option value="none.png" '.$customsel[$i].' >'.$theicon.'</option>';
+                }
             }
+        }
 
-            $content .= '</select></div>';
+        $url = plugins_url()."/visual-editor-custom-buttons";
+
+        for ($i=1;$i<count($btnicons);$i++) {
+            $ticon = explode(".", $btnicons[$i]);
+            $theicon = str_replace("_"," ",$ticon[0]);
+            $theicon = ucfirst($theicon);
+            $content .= '<option value="'.$btnicons[$i].'" data-image="'.$url .'/js/icons/'.$btnicons[$i].'" '.$sel[$i].' >'.$theicon.'</option>';
+        }
+
+        $content .= '</select></div>';
             $content .= '<div id="vecb_pluginurl" style="display:none">'.plugins_url().'</div>';
             $content .= '<div id="vecb_custompluginurl" style="display:none">'.$uploadurl.'</div>';
             $content .= '<div class="vecb_preview"><div style="padding:23px 0 0 8px"><span id="vecb_btnpreview"><div id="vecb_btnimg"><img src="'.plugins_url().'/visual-editor-custom-buttons/js/icons/none.png"></div></span><div class="vecb_preview_text">Preview</div></div></div>';
@@ -536,24 +534,24 @@ function vecb_editor_buttons() {
   <input type="text" class="vecb_text" value="'.$quicktag.'" name="quicktag"></div>';
 
             echo $content;
-        }
+    }
 
-        function vecb_styling_options() {
-            global $post;
-            $custom = get_post_custom($post->ID);
-            $styling = $custom["styling_content"][0];
-            $content = '<section class="recb_inputblock"><div class="vecb_label">CSS</div>
-	<div class="vecb_desc">Only for visualization in the Visual Editor. Use normal stylesheet for Front End styling.</div>
-	<textarea name="styling_content" id="styling_content" cols="45" rows="5">' . $styling  . '</textarea></section>';
-            echo $content;
-        }
+    function vecb_styling_options() {
+        global $post;
+        $custom = get_post_custom($post->ID);
+        $styling = $custom["styling_content"][0];
+        $content = '<section class="recb_inputblock"><div class="vecb_label">CSS</div>
+<div class="vecb_desc">Only for visualization in the Visual Editor. Use normal stylesheet for Front End styling.</div>
+<textarea name="styling_content" id="styling_content" cols="45" rows="5">' . $styling  . '</textarea></section>';
+        echo $content;
+    }
 
-        function vecb_script_options() {
-            global $post;
-            $custom = get_post_custom($post->ID);
-            $script_content = $custom["script_content"][0];
-            $use_script_content = $custom["use_script_content"][0];
-            $content = '<section class="recb_inputblock"><div class="vecb_label">JavaScript</div>
+    function vecb_script_options() {
+        global $post;
+        $custom = get_post_custom($post->ID);
+        $script_content = $custom["script_content"][0];
+        $use_script_content = $custom["use_script_content"][0];
+        $content = '<section class="recb_inputblock"><div class="vecb_label">JavaScript</div>
 <script type="text/javascript">
   function apply_valid_option(el) {
     const toggle = Object.is(parseInt(el.value), NaN) ? 0 : parseInt(el.value);
@@ -563,23 +561,23 @@ function vecb_editor_buttons() {
 <div class="vecb_desc">
   <br/>
   <input id="use_script_content" name="use_script_content" type="checkbox" onChange="apply_valid_option(this)" ';
-            if($use_script_content == "1") $content .= " checked ";
-            $content .= 'value="';
-            $content .= $use_script_content;
-            $content .= '" /> Use the following script content rather than auto generated</div>
+        if($use_script_content == "1") $content .= " checked ";
+        $content .= 'value="';
+        $content .= $use_script_content;
+        $content .= '" /> Use the following script content rather than auto generated</div>
 <textarea name="script_content" id="script_content" cols="45" rows="15">' . $script_content  . '</textarea></section>';
-            echo $content;
-        }
+        echo $content;
+    }
 
 
-        /* 각 버튼 설정 저장*/
-        function vecb_save_options()
-        {
-            if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return $post_id;
+    /* 각 버튼 설정 저장*/
+    function vecb_save_options()
+    {
+        if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return $post_id;
 
-            global $post;
-            if ( 'vecb_editor_buttons' == get_post_type() ) :
-                update_post_meta($post->ID, "left_tag", $_POST["left_tag"]);
+        global $post;
+        if ( 'vecb_editor_buttons' == get_post_type() ) :
+            update_post_meta($post->ID, "left_tag", $_POST["left_tag"]);
             update_post_meta($post->ID, "right_tag", $_POST["right_tag"]);
             update_post_meta($post->ID, "styling_content", $_POST["styling_content"]);
             update_post_meta($post->ID, "content-block", $_POST["content-block"]);
@@ -593,22 +591,25 @@ function vecb_editor_buttons() {
             update_post_meta($post->ID, "use_script_content", $_POST["use_script_content"]);
             update_post_meta($post->ID, "script_content", $_POST["script_content"]);
 
+            $target_post_id = $post->ID;
+
             // Save updates to files
             $args = array( 'post_type' => 'vecb_editor_buttons',
                            'posts_per_page' => -1,
-                           'order' => 'asc');
+                           'suppress_filters' => true,
+                           'orderby' => 'ID',
+                           'order' => 'ASC');
             $loop = new WP_Query( $args );
-            $count = 0;
+            // 'ASC'로 달라고해도 $loop 안에서는 DESC 형태로 정렬되어 있다
             $stylefile = WP_PLUGIN_DIR. '/visual-editor-custom-buttons/css/editor-style.css';
             $style = '@charset "UTF-8";
 /* CSS Document */
 ';
-            $target_post_id = $post->ID;
             $use_script_content = $_POST["use_script_content"];
-
-            while ( $loop->have_posts() ) : $loop->the_post();
+            while ( $loop->have_posts() ) :
+                $loop->the_post();
             $id = get_the_ID();
-            $count ++;
+            $count += 1;
             $custom = get_post_custom($post->ID);
             $left_tag = $custom["left_tag"][0];
             $right_tag = $custom["right_tag"][0];
@@ -698,14 +699,14 @@ function vecb_editor_buttons() {
             }
 
             $styling = str_replace("\r","",$styling);
-	    if($styling != "" ) $style .= $styling . "
+                if($styling != "" ) $style .= $styling . "
 ";
             endwhile;
 
             // 스타일 생성
-            file_put_contents($stylefile, $style);
-            endif;
-        }
+        file_put_contents($stylefile, $style);
+        endif;
+    }
 }
 
 /* Add HTML-Editor Button */
