@@ -3,7 +3,7 @@
     init : function(ed, url) {
       ed.addButton('vecb_button17', {
         title : 'SquareBox',image : url+'/icons/box.png', onclick : function() {
-              ed.selection.setContent('<span class="square-box">' + ed.selection.getContent() + '</span>');
+              ed.selection.setContent('<span class="square-box">' + ed.selection.getContent() + '</span> |');
          }
       });
     },
