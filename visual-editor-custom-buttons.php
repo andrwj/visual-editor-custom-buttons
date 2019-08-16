@@ -712,7 +712,7 @@ function vecb_editor_buttons() {
 /* Add HTML-Editor Button */
 if( !function_exists('_add_my_quicktags') ){
     function _add_my_quicktags(){
-
+        global $post;
         $content = '<script type="text/javascript">';
 
         $args = array( 'post_type' => 'vecb_editor_buttons',
@@ -720,6 +720,7 @@ if( !function_exists('_add_my_quicktags') ){
 
 
         $loop = new WP_Query( $args );
+        $count = 0;
 
         while ( $loop->have_posts() ) : $loop->the_post();
 
